@@ -1,13 +1,16 @@
-import { createContext, useReducer } from "react";
+import { createContext, useEffect, useReducer } from "react";
 import { bookReducer } from "../reducers/bookReducer";
 
 export const BookContext = createContext();
 const BookContextProvider = (props) => {
-  const [books, dispatch] = useReducer(bookReducer, [
-    { title: "The Gods must be crazy", author: "Malcom X", id: 1 },
-    { title: "Harry Potter", authour: "John Snow", id: 2 },
-    { title: "God of war", author: "Sam Andy", id: 3 },
-  ]);
+  const [books, dispatch] = useReducer(bookReducer, [], () => {
+    const localData = localStorage.getItem("books");
+    return localData ? JSON.parse(localData) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("books", JSON.stringify(books));
+  }, [books]);
 
   return (
     <BookContext.Provider value={{ books, dispatch }}>
